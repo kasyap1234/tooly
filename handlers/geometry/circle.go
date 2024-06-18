@@ -1,5 +1,4 @@
 package handlers
-
 import (
 	"fmt"
 	"log"
@@ -12,7 +11,7 @@ func FindArea(radius float64) float64 {
 		return 3.14 * radius * radius
 	}
 	log.Fatal("invalid radius"); 
-	
+
 	return 0.00
 }
 func FindCircumference(radius float64) float64 {
@@ -41,5 +40,5 @@ func CircleCircumferenceHandler(w http.ResponseWriter, r *http.Request) float64 
 		return 0.000
 	}
 	return FindCircumference(floatValue)
-
 }
+
