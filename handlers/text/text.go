@@ -18,6 +18,7 @@ if err :=json.NewDecoder(r.Body).Decode(&inputData); err != nil {
 	return 
 }
 
+
 w.Write([]byte(CapitaliseText(inputData)))
 }
 
