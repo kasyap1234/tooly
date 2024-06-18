@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	// "math"
 	"net/http"
-	"github.com/kasyap1234/alltools/handlers/math/model"
+	"github.com/kasyap1234/alltools/handlers/arithmetic/model"
 )
 func CalculatePercentage(a float64 , b float64 ) float64{
 
