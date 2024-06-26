@@ -4,7 +4,7 @@ package arithmetic
 import (
 	"encoding/json"
 	"net/http"
-	"github.com/kasyap1234/alltools/handlers/arithmetic/model"
+	
 )
 func IsPrime(n int) bool {
 
