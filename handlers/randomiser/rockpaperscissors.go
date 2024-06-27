@@ -7,11 +7,9 @@ func GenerateRockPaperScissors() string {
 	choices := []string{"rock", "paper", "scissors"}
 	return choices[rand.Intn(3)]
 }
-func RockPaperScissorsHandler(w http.ResponseWriter , r *http.Request)string{
+func RockPaperScissorsHandler(w http.ResponseWriter , r *http.Request){
 
-	return GenerateRockPaperScissors(); 
-
-
+	w.Write([]byte(GenerateRockPaperScissors()))
 }
 
 

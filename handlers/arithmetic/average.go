@@ -2,6 +2,8 @@ package arithmetic
 
 import ("encoding/json"
 	"net/http"
+	"fmt"
+
 )
 
 func sum(input []float64) float64{
@@ -16,14 +18,14 @@ func sum(input []float64) float64{
 func CalculateAverage(input []float64) float64{
 	return sum(input) / float64(len(input))
 }
-func AverageHandler(w http.ResponseWriter, r *http.Request) float64{
+func AverageHandler(w http.ResponseWriter, r *http.Request) {
 	var input []float64 ; 
 	if err :=json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		return 0.0
+		
 	}
 
-	return CalculateAverage(input)
+	w.Write([]byte(fmt.Sprintf(`{"average": %f}`, CalculateAverage(input)))) 
 }
 
 
