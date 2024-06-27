@@ -1,4 +1,5 @@
-package handlers 
+package randomiser
+
 
 import ("math/rand"
 		"net/http"

@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	// "math"
 	"net/http"
-	"github.com/kasyap1234/golang/alltools/tooly/handlers/model"
+	"github.com/kasyap1234/tooly/handlers/arithmetic/model"
 	
+
 	// "github.com/go-chi/chi"
 )
 
