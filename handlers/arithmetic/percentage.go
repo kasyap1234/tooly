@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	// "math"
 	"net/http"
-	"github.com/kasyap1234/alltools/handlers/arithmetic/model"
+	"github.com/kasyap1234/golang/alltools/tooly/handlers/model"
+	
+	// "github.com/go-chi/chi"
 )
 
 func CalculatePercentageValue(a float64, b float64) float64 {
