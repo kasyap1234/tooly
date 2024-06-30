@@ -15,7 +15,7 @@ type SIP struct {
 }
 func SIPCalculator(sip *SIP) float64 {
     annualRate := sip.Interest / 100
-    monthlyRate := math.Pow((1+annualRate), 1/12) // Calculate monthly rate
+    monthlyRate := math.Pow((1+annualRate), 1/12.0) // Calculate monthly rate
 
     for i := 0; i < sip.Duration*12; i++ { // Assuming duration is in years, convert to months
         sip.Total += sip.MonthlyInvestment * monthlyRate
