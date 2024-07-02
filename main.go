@@ -29,14 +29,17 @@ func main() {
 	r.Mount("/code", codeHandlers())
 	r.Mount("/geometry", geometryHandlers())
 	r.Mount("/randomiser", randomiserHandlers())
+	r.Mount("/finance", financeHandlers())
+
 	
 	// r.Mount()	
 	fmt.Println("server started")
 	http.ListenAndServe(":3000", r)
 }
-func fianceHanlders() chi.Router {
+func financeHandlers() chi.Router {
 	r :=chi.NewRouter(); 
-	r.Post("/SIP",finance.SIPHandler()); 
+	r.Post("/SIP",finance.SIPHandler); 
+return r 
 
 }
 func codeHandlers() chi.Router {
