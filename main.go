@@ -3,14 +3,14 @@ package main
 import (
 	"fmt"
 	"net/http"
-
+     "github.com/go-chi/cors"
 	"github.com/kasyap1234/tooly/middlewares"
 
 	"github.com/kasyap1234/tooly/handlers/code"
 	"github.com/kasyap1234/tooly/handlers/finance"
 	"github.com/kasyap1234/tooly/handlers/geometry"
 	"github.com/kasyap1234/tooly/handlers/randomiser"
-     "github.com/kasyap1234/tooly/handlers/finance"
+     
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 )
@@ -18,7 +18,17 @@ import (
 func main() {
 
 	r := chi.NewRouter()
-	
+	// add cors 
+     cors := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},    // Allow all origins
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum age for preflight requests
+	})
+
+	// Use CORS middleware
+	r.Use(cors.Handler)
 	r.Use(middlewares.LoggerMiddleware)
 	r.Use(middleware.Recoverer)
 

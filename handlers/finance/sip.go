@@ -3,31 +3,54 @@ package finance
 import (
 	"encoding/json"
 	"fmt"
-	"math"
-	"net/http"
-)
-type SIP struct {
 	
-	MonthlyInvestment float64
-	Duration int 
-	Interest float64
-	Total float64 
+	"net/http"
+	"strconv"
+	
+)
+
+type SIP struct {
+	MonthlyInvestment string `json:"MonthlyInvestment"`
+	Duration string         `json:"Duration"`
+	Interest string			`json:"Interest"`
+	Total string  			`json:"Total"`
 }
 func SIPCalculator(sip *SIP) float64 {
-    annualRate := sip.Interest / 100
-    monthlyRate := math.Pow((1+annualRate), 1/12.0) // Calculate monthly rate
+    
+    
+   stringInvestment,err := strconv.Atoi(sip.MonthlyInvestment);
 
-    for i := 0; i < sip.Duration*12; i++ { // Assuming duration is in years, convert to months
-        sip.Total += sip.MonthlyInvestment * monthlyRate
-    }
+   fmt.Println(stringInvestment)
+    
+   if err!=nil {
+	fmt.Printf("Error: %v\n", err)
+		return 0.0;
+   }
 
-    return sip.Total
+    rate,err :=strconv.ParseFloat(sip.Interest,64); 
+	if err!= nil {
+		fmt.Printf("Error: %v\n", err)
+		return 0
+	}
+	intDuration,err :=strconv.Atoi(sip.Duration); 
+	if err!=nil {
+		fmt.Printf("Error: %v\n", err)
+		return 0.0; 
+	}
+    // monthlyRate := math.Pow((1+rate), 1/12.0) // Calculate monthly rate
+    // intTotal,_ := strconv.ParseFloat(sip.Total,64); 
+//    fv = p × ({[1 + i]n – 1} / i) × (1 + i).
+    // intTotal +=float64(stringInvestment)*(monthlyRate * float64(intDuration))
+   intTotal := float64(stringInvestment) * (((1 + rate) * float64(intDuration)*12 - 1) / rate) * (1 + rate)
+
+    return intTotal; 
 }
 
 func SIPHandler(w http.ResponseWriter, r *http.Request) {
 	var sip SIP ; 
 	if err :=json.NewDecoder(r.Body).Decode(&sip); err!= nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Printf("Error: %v\n", err)
 		return
 	}
 	finalValue :=SIPCalculator(&sip)
