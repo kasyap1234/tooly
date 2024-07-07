@@ -15,7 +15,7 @@ type SIP struct {
 	Interest string			`json:"Interest"`
 	Total string  			`json:"Total"`
 }
-func SIPCalculator(sip *SIP) float64 {
+func SIPCalculator(sip *SIP) string{
     
     
    stringInvestment,err := strconv.Atoi(sip.MonthlyInvestment);
@@ -24,18 +24,18 @@ func SIPCalculator(sip *SIP) float64 {
     
    if err!=nil {
 	fmt.Printf("Error: %v\n", err)
-		return 0.0;
+		return ""
    }
 
     rate,err :=strconv.ParseFloat(sip.Interest,64); 
 	if err!= nil {
 		fmt.Printf("Error: %v\n", err)
-		return 0
+		return ""
 	}
 	intDuration,err :=strconv.Atoi(sip.Duration); 
 	if err!=nil {
 		fmt.Printf("Error: %v\n", err)
-		return 0.0; 
+		return "" 
 	}
     // monthlyRate := math.Pow((1+rate), 1/12.0) // Calculate monthly rate
     // intTotal,_ := strconv.ParseFloat(sip.Total,64); 
@@ -43,7 +43,9 @@ func SIPCalculator(sip *SIP) float64 {
     // intTotal +=float64(stringInvestment)*(monthlyRate * float64(intDuration))
    intTotal := float64(stringInvestment) * (((1 + rate) * float64(intDuration)*12 - 1) / rate) * (1 + rate)
 
-    return intTotal; 
+    stringValue := strconv.FormatFloat(intTotal, 'f', 2, 64)
+	return stringValue; 
+
 }
 
 func SIPHandler(w http.ResponseWriter, r *http.Request) {
@@ -53,8 +55,8 @@ func SIPHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Error: %v\n", err)
 		return
 	}
-	finalValue :=SIPCalculator(&sip)
-   w.Write([]byte(fmt.Sprintf("%.2f",finalValue)))
+	stringValue :=SIPCalculator(&sip)
+   w.Write([]byte(fmt.Sprintf(stringValue)))
 
 }
 
