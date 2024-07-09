@@ -3,22 +3,42 @@ package main
 import (
 	"fmt"
 	"net/http"
-     "github.com/go-chi/cors"
+
+	"github.com/go-chi/cors"
 	"github.com/kasyap1234/tooly/middlewares"
 
 	"github.com/kasyap1234/tooly/handlers/code"
 	"github.com/kasyap1234/tooly/handlers/finance"
 	"github.com/kasyap1234/tooly/handlers/geometry"
 	"github.com/kasyap1234/tooly/handlers/randomiser"
-     
+	"github.com/kasyap1234/tooly/handlers/taskmanager"
+
+	"log"
+	"time"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/kasyap1234/tooly/db"
 )
-
+func connectWithRetry(dsn string, models ...interface{}) {
+    var err error
+    maxAttempts := 10
+    for i := 0; i < maxAttempts; i++ {
+          database.ConnectDB(dsn, models...)
+        if err == nil {
+            return
+        }
+        log.Printf("Failed to connect to database. Retrying in 5 seconds... (Attempt %d/%d)", i+1, maxAttempts)
+        time.Sleep(5 * time.Second)
+    }
+    log.Fatalf("Could not connect to the database: %v", err)
+}
 func main() {
 
 	r := chi.NewRouter()
-	// add cors 
+	  dsn := "host=db user=youruser password=yourpassword dbname=database port=5432 sslmode=disable "
+	 connectWithRetry(dsn, &taskmanager.Task{})
+	 
      cors := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},    // Allow all origins
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -56,6 +76,15 @@ return r
 func codeHandlers() chi.Router {
 	r := chi.NewRouter()
 	r.Post("/validatejson", code.ValidateJsonHandler)
+	return r
+}
+func taskmanagerHandlers() chi.Router {
+	r := chi.NewRouter()
+	r.Get("/tasks", taskmanager.GetTasks(database.DB))
+	r.Post("/tasks", taskmanager.CreateTask(database.DB))
+	r.Get("/tasks/{id}", taskmanager.GetTask(database.DB))
+	r.Put("/tasks/{id}", taskmanager.UpdateTask(database.DB))
+	r.Delete("/tasks/{id}", taskmanager.DeleteTask(database.DB))
 	return r
 }
 func geometryHandlers() chi.Router {
