@@ -52,6 +52,7 @@ func financeHandlers() chi.Router {
 return r 
 
 }
+// http://localhost:3000/SIP
 func codeHandlers() chi.Router {
 	r := chi.NewRouter()
 	r.Post("/validatejson", code.ValidateJsonHandler)
