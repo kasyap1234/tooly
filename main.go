@@ -10,6 +10,7 @@ import (
 	"github.com/kasyap1234/tooly/handlers/code"
 	"github.com/kasyap1234/tooly/handlers/finance"
 	"github.com/kasyap1234/tooly/handlers/geometry"
+	"github.com/kasyap1234/tooly/handlers/notes"
 	"github.com/kasyap1234/tooly/handlers/randomiser"
 	"github.com/kasyap1234/tooly/handlers/taskmanager"
 
@@ -36,9 +37,12 @@ func connectWithRetry(dsn string, models ...interface{}) {
 func main() {
 
 	r := chi.NewRouter()
-	  dsn := "host=db user=youruser password=yourpassword dbname=database port=5432 sslmode=disable "
+	dsn := "host=localhost user=youruser password=yourpassword dbname=database port=5432 sslmode=disable"
+
+
 	 connectWithRetry(dsn, &taskmanager.Task{})
-	 
+	 connectWithRetry(dsn,&notes.Notes{})
+
      cors := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},    // Allow all origins
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -60,6 +64,7 @@ func main() {
 	r.Mount("/geometry", geometryHandlers())
 	r.Mount("/randomiser", randomiserHandlers())
 	r.Mount("/finance", financeHandlers())
+    r.Mount("/tasksmanager",taskmanagerHandlers())
 
 	
 	// r.Mount()	
