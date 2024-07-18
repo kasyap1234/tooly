@@ -65,6 +65,7 @@ func main() {
 	r.Mount("/randomiser", randomiserHandlers())
 	r.Mount("/finance", financeHandlers())
     r.Mount("/tasksmanager",taskmanagerHandlers())
+	r.Mount("/notehandler",notesHandlers())
 
 	
 	// r.Mount()	
@@ -98,6 +99,15 @@ func geometryHandlers() chi.Router {
 	r.Get("/circle/circumference", geometry.CircleCircumferenceHandler);
 	return r 
 
+}
+func notesHandlers() chi.Router {
+	r := chi.NewRouter()
+	r.Get("/notes", notes.GetNotes(database.DB))
+	r.Post("/notes", notes.CreateNotes(database.DB))
+	r.Get("/notes/{id}", notes.GetNote(database.DB))
+	r.Put("/notes/{id}", notes.UpdateNote(database.DB))
+	r.Delete("/notes/{id}", notes.DeleteNote(database.DB))
+	return r
 }
 func randomiserHandlers() chi.Router {
  r :=chi.NewRouter()

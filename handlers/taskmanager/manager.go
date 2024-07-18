@@ -13,7 +13,7 @@ type Task struct {
 	Title string `json:"title"`
 	Description string `json:"description"`	
 	DueDate string `json:"dueDate"`
-
+    
 	
 }
 func GetTasks(db *gorm.DB) http.HandlerFunc {

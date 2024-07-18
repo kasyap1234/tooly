@@ -11,7 +11,7 @@ import (
 
 type Notes struct {
 	gorm.Model
-	ID      int    `json:"id"`
+	ID      int    `gorm:"unique" json:"id"`
 	Title   string `json:"title"`
 	Content string `json:"content"`
 }
@@ -88,3 +88,29 @@ func UpdateNote(db *gorm.DB) http.HandlerFunc {
 
 }
 }
+func DeleteNote(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		noteID, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err!= nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		var note Notes
+		if err := db.First(&note, noteID).Error; err!= nil {
+			if err == gorm.ErrRecordNotFound {
+				http.Error(w, "Record not found", http.StatusNotFound)
+			} else {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+		if err := db.Delete(&note).Error; err!= nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+
+
