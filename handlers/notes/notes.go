@@ -3,15 +3,16 @@ package notes
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
+	
 
 	"github.com/go-chi/chi"
+"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Notes struct {
 	gorm.Model
-	ID      int    `gorm:"unique" json:"id"`
+	ID      uuid.UUID  `gorm:"type:uuid;primary_key;" json:"id"`
 	Title   string `json:"title"`
 	Content string `json:"content"`
 }
@@ -19,10 +20,13 @@ type Notes struct {
 func CreateNotes(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var notes Notes
+
 		if err := json.NewDecoder(r.Body).Decode(&notes); err!= nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		notes.ID= uuid.New();
+		
 		if err := db.Create(&notes).Error; err!= nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -43,13 +47,10 @@ func GetNotes(db *gorm.DB) http.HandlerFunc {
 }
 func GetNote(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		noteID, err := strconv.Atoi(chi.URLParam(r, "id"))
-		if err!= nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+		noteID := chi.URLParam(r, "id")
+		
 		var note Notes
-		if err := db.First(&note, noteID).Error; err!= nil {
+		if err := db.First(&note,"id=?", noteID).Error; err!= nil {
 			if err == gorm.ErrRecordNotFound {
 				http.Error(w, "Record not found", http.StatusNotFound)
 			} else {
@@ -61,42 +62,34 @@ func GetNote(db *gorm.DB) http.HandlerFunc {
 	}
 }
 func UpdateNote(db *gorm.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		noteID, err := strconv.Atoi(chi.URLParam(r, "id"))
-		if err!= nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		var note Notes
-		if err := db.First(&note, noteID).Error; err!= nil {
-			if err == gorm.ErrRecordNotFound {
-				http.Error(w, "Record not found", http.StatusNotFound)
-			} else {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-		}
-		if err := json.NewDecoder(r.Body).Decode(&note); err!= nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}	
-		if err := db.Save(&note).Error; err!= nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		json.NewEncoder(w).Encode(note)
-
-}
+    return func(w http.ResponseWriter, r *http.Request) {
+        noteID := chi.URLParam(r, "id")
+        var note Notes
+        if err := db.First(&note, "id = ?", noteID).Error; err != nil {
+            if err == gorm.ErrRecordNotFound {
+                http.Error(w, "Record not found", http.StatusNotFound)
+            } else {
+                http.Error(w, err.Error(), http.StatusInternalServerError)
+            }
+            return
+        }
+        if err := json.NewDecoder(r.Body).Decode(&note); err != nil {
+            http.Error(w, err.Error(), http.StatusBadRequest)
+            return
+        }    
+        if err := db.Save(&note).Error; err != nil {
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+        json.NewEncoder(w).Encode(note)
+    }
 }
 func DeleteNote(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		noteID, err := strconv.Atoi(chi.URLParam(r, "id"))
-		if err!= nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+		noteID:= chi.URLParam(r, "id")
+		
 		var note Notes
-		if err := db.First(&note, noteID).Error; err!= nil {
+		if err := db.First(&note, "id=?",noteID).Error; err!= nil {
 			if err == gorm.ErrRecordNotFound {
 				http.Error(w, "Record not found", http.StatusNotFound)
 			} else {
